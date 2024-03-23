@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AutoActa</string>
+    <string name="title_activity_record">Record</string>
+    <string name="title_activity_lateral_menu">LateralMenuActivity</string>
+</resources>
