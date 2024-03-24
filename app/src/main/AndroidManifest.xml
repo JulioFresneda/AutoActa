@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
 
     <application
         android:allowBackup="true"
@@ -15,6 +17,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AutoActa"
         tools:targetApi="31">
+        <activity
+
+            android:name="com.amplifyframework.auth.cognito.activities.HostedUIRedirectActivity"
+
+            android:exported="true">
+
+            <intent-filter>
+
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="myapp" />
+
+            </intent-filter>
+
+        </activity>
         <activity
             android:name=".LateralMenuActivity"
             android:exported="false"

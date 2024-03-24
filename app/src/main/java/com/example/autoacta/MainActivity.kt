@@ -22,10 +22,13 @@ import java.io.IOException
 
 import android.Manifest
 import android.app.Activity
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.Alignment
 
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -48,8 +51,10 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
@@ -63,6 +68,18 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import com.amplifyframework.AmplifyException
+import com.amplifyframework.auth.AuthProvider
+import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin
+import com.amplifyframework.core.Amplify
+import com.amplifyframework.storage.s3.AWSS3StoragePlugin
+import com.amplifyframework.ui.authenticator.AuthenticatorState
+import com.amplifyframework.ui.authenticator.forms.FieldKey
+
+import com.amplifyframework.ui.authenticator.rememberAuthenticatorState
+import com.amplifyframework.ui.authenticator.ui.Authenticator
+import com.amplifyframework.ui.authenticator.ui.SignInFooter
 
 
 data class NavigationItem(
@@ -83,19 +100,124 @@ class MainActivity : ComponentActivity() {
         private const val REQUEST_RECORD_AUDIO_PERMISSION = 200
     }
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        try {
+            Amplify.addPlugin(AWSCognitoAuthPlugin())
+            Amplify.addPlugin(AWSS3StoragePlugin())
+            Amplify.configure(applicationContext)
+            Log.i("MyAmplifyApp", "Initialized Amplify")
+        } catch (error: AmplifyException) {
+            Log.e("MyAmplifyApp", "Could not initialize Amplify", error)
+        }
+
+
+
+
+
         setContent {
-            AutoActaTheme {
-                MainUI()
-                if (showContent) {
-                    // Show the full-screen composable when requested
-                    SaveAudioActivityBack(showContent = showContent, onShowContentChange = { showContent = it })
+            Authenticator(
+                signInContent = { state ->
+                    val scope = rememberCoroutineScope()
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize() // Fill the max size of the parent
+                            .padding(16.dp), // Add padding around the Column
+                        verticalArrangement = Arrangement.Center, // Center items vertically
+                        horizontalAlignment = Alignment.CenterHorizontally // Center items horizontally
+                    ) {
+                        val email = state.form.fields[FieldKey.Email]!!.state.content
+                        val password = state.form.fields[FieldKey.Password]!!.state.content
+
+                        // Use a nicer looking TextField, Material Design by default
+                        OutlinedTextField(
+                            value = email,
+                            onValueChange = { newValue ->
+                                // Ensure the new value is updated properly in your state management
+                                state.form.fields[FieldKey.Email]!!.state.content = newValue
+                            },
+                            label = { Text("Email") },
+                            singleLine = true, // Makes the TextField a single line input
+                            modifier = Modifier.fillMaxWidth(0.8f) // Use 80% of the width
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp)) // Add space between the text fields
+
+                        OutlinedTextField(
+                            value = password,
+                            onValueChange = { newValue ->
+                                // Ensure the new value is updated properly in your state management
+                                state.form.fields[FieldKey.Password]!!.state.content = newValue
+                            },
+                            label = { Text("Password") },
+                            singleLine = true, // Makes the TextField a single line input
+                            visualTransformation = PasswordVisualTransformation(), // Hides the password input
+                            modifier = Modifier.fillMaxWidth(0.8f) // Use 80% of the width
+                        )
+
+                        Spacer(modifier = Modifier.height(24.dp)) // Add space between the TextField and Button
+
+                        Button(
+                            onClick = { scope.launch { state.signIn() } },
+                            modifier = Modifier.align(Alignment.CenterHorizontally) // Center the button
+                        ) {
+                            Text("Sign In")
+                        }
+
+                        // If you have a footer, you can place it here,
+                        // or consider customizing it further as needed.
+                        SignInFooter(state)
+
+
+                        Button(
+                            onClick = { SetUpLogin()},
+                            modifier = Modifier.align(Alignment.CenterHorizontally) // Center the button
+                        ) {
+                            Text("Sign In With Google")
+                        }
+                    }
                 }
+            )
+            { state ->
+                AutoActaTheme {
+                    MainUI()
+                    if (showContent) {
+                        // Show the full-screen composable when requested
+                        SaveAudioActivityBack(
+                            showContent = showContent,
+                            onShowContentChange = { showContent = it })
+                    }
 
 
+                }
             }
+        }
+    }
+
+
+    fun SetUpLogin(){
+        try {
+
+            Amplify.Auth.signInWithSocialWebUI(
+
+                AuthProvider.google(),
+
+                this,
+
+                { val intent = intent
+                  finish()
+                  startActivity(intent)},
+
+                { Log.e("AuthQuickstart", "Sign in failed", it) }
+
+            )
+            Log.i("MyAmplifyApp", "Initialized Amplify")
+        } catch (error: AmplifyException) {
+            Log.e("MyAmplifyApp", "Could not initialize Amplify", error)
         }
     }
 

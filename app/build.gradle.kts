@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.autoacta"
-        minSdk = 25
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -27,6 +27,7 @@ android {
         }
     }
     compileOptions {
+
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -59,6 +60,10 @@ dependencies {
     implementation(libs.androidx.compose.material)
     implementation(libs.aws.android.sdk.s3)
     implementation(libs.aws.android.sdk.mobile.client)
+    implementation(libs.authenticator)
+    implementation(libs.desugar.jdk.libs)
+    implementation(libs.aws.auth.cognito)
+    implementation(libs.aws.storage.s3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
