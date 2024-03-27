@@ -54,7 +54,6 @@ import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
@@ -70,14 +69,13 @@ import kotlinx.coroutines.launch
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.amplifyframework.AmplifyException
+import com.amplifyframework.api.aws.AWSApiPlugin
 import com.amplifyframework.auth.AuthProvider
 import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin
 import com.amplifyframework.core.Amplify
 import com.amplifyframework.storage.s3.AWSS3StoragePlugin
-import com.amplifyframework.ui.authenticator.AuthenticatorState
 import com.amplifyframework.ui.authenticator.forms.FieldKey
 
-import com.amplifyframework.ui.authenticator.rememberAuthenticatorState
 import com.amplifyframework.ui.authenticator.ui.Authenticator
 import com.amplifyframework.ui.authenticator.ui.SignInFooter
 
@@ -94,7 +92,7 @@ class MainActivity : ComponentActivity() {
     private var mediaRecorder: MediaRecorder? = null
     private lateinit var audioFile: File
 
-    private var showContent by mutableStateOf(false)
+    private var showMakeSummaryDialog by mutableStateOf(false)
 
     companion object {
         private const val REQUEST_RECORD_AUDIO_PERMISSION = 200
@@ -109,6 +107,7 @@ class MainActivity : ComponentActivity() {
         try {
             Amplify.addPlugin(AWSCognitoAuthPlugin())
             Amplify.addPlugin(AWSS3StoragePlugin())
+            Amplify.addPlugin(AWSApiPlugin())
             Amplify.configure(applicationContext)
             Log.i("MyAmplifyApp", "Initialized Amplify")
         } catch (error: AmplifyException) {
@@ -185,11 +184,12 @@ class MainActivity : ComponentActivity() {
             { state ->
                 AutoActaTheme {
                     MainUI()
-                    if (showContent) {
+                    if (showMakeSummaryDialog) {
                         // Show the full-screen composable when requested
                         SaveAudioActivityBack(
-                            showContent = showContent,
-                            onShowContentChange = { showContent = it })
+                            showContent = showMakeSummaryDialog,
+                            onShowContentChange = { showMakeSummaryDialog = it },
+                            audioFile = audioFile)
                     }
 
 
@@ -431,7 +431,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleRecordedAudio(audioFile: File) {
-        showContent = true
+        showMakeSummaryDialog = true
     }
 
 

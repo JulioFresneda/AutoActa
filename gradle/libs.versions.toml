@@ -17,6 +17,12 @@ authenticator = "1.1.0"
 desugar_jdk_libs = "2.0.4"
 awsAuthCognito = "2.14.12"
 awsStorageS3 = "2.14.12"
+awsApi = "2.14.12"
+awsCore = "2.14.12"
+coreKotlin = "2.14.12"
+awsJavaSdkApiGateway = "1.12.688"
+core = "2.14.12"
+awsApiAppsync = "2.14.12"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -42,6 +48,12 @@ authenticator = { group = "com.amplifyframework.ui", name = "authenticator", ver
 desugar_jdk_libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 aws-auth-cognito = { group = "com.amplifyframework", name = "aws-auth-cognito", version.ref = "awsAuthCognito" }
 aws-storage-s3 = { group = "com.amplifyframework", name = "aws-storage-s3", version.ref = "awsStorageS3" }
+aws-api = { group = "com.amplifyframework", name = "aws-api", version.ref = "awsApi" }
+aws-core = { group = "com.amplifyframework", name = "aws-core", version.ref = "awsCore" }
+core-kotlin = { group = "com.amplifyframework", name = "core-kotlin", version.ref = "coreKotlin" }
+aws-java-sdk-api-gateway = { group = "com.amazonaws", name = "aws-java-sdk-api-gateway", version.ref = "awsJavaSdkApiGateway" }
+core = { group = "com.amplifyframework", name = "core", version.ref = "core" }
+aws-api-appsync = { group = "com.amplifyframework", name = "aws-api-appsync", version.ref = "awsApiAppsync" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

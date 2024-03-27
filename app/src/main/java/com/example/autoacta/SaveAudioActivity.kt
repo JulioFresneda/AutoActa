@@ -1,5 +1,6 @@
 package com.example.autoacta
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
@@ -47,10 +48,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.wear.compose.material.ContentAlpha
+import com.amplifyframework.api.rest.RestOptions
+import com.amplifyframework.core.Amplify
 import kotlinx.coroutines.delay
+import java.io.File
 
 @Composable
-fun SaveAudioActivityBack(showContent: Boolean, onShowContentChange: (Boolean) -> Unit) {
+fun SaveAudioActivityBack(showContent: Boolean, onShowContentChange: (Boolean) -> Unit, audioFile: File) {
 
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -70,7 +74,7 @@ fun SaveAudioActivityBack(showContent: Boolean, onShowContentChange: (Boolean) -
                     )
             )
 
-            SaveAudioActivity(onClose = { onShowContentChange(false) })
+            SaveAudioActivity(onClose = { onShowContentChange(false) }, audioFile)
         }
     }
 }
@@ -79,7 +83,7 @@ fun SaveAudioActivityBack(showContent: Boolean, onShowContentChange: (Boolean) -
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SaveAudioActivity(onClose: () -> Unit) {
+fun SaveAudioActivity(onClose: () -> Unit, audioFile: File) {
     
     // States for input fields
     var jobName by remember { mutableStateOf("") }
@@ -195,7 +199,26 @@ fun SaveAudioActivity(onClose: () -> Unit) {
                 SaveAndCloseButtons(
                     onMakeSummary = {
                         // Call your AWS upload function with the collected data
-                        SummaryJobMetadata.uploadToS3(jobName, jobDescription, actors)
+                        SummaryJobMetadata.uploadToS3(audioFile, jobName, jobDescription, actors)
+
+                        val options = RestOptions.builder()
+
+                            .addPath("/trigger")
+
+                            .addBody("{\"configFilePath\":\"user1/carlosbaute/config.json\"}".toByteArray())
+
+                            .build()
+
+
+                        Amplify.API.post(options,
+
+                            { Log.i("MyAmplifyApp", "POST succeeded: $it") },
+
+                            { Log.e("MyAmplifyApp", "POST failed", it) }
+
+                        )
+
+
                         // Then close the composable
                         onClose()
                     },
