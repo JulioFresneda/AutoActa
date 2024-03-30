@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.aws.api)
     implementation(libs.core)
     implementation(libs.aws.api.appsync)
+    implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

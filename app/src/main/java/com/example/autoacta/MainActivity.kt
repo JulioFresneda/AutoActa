@@ -42,6 +42,7 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -68,6 +69,9 @@ import kotlinx.coroutines.launch
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.amplifyframework.AmplifyException
 import com.amplifyframework.api.aws.AWSApiPlugin
 import com.amplifyframework.auth.AuthProvider
@@ -78,6 +82,20 @@ import com.amplifyframework.ui.authenticator.forms.FieldKey
 
 import com.amplifyframework.ui.authenticator.ui.Authenticator
 import com.amplifyframework.ui.authenticator.ui.SignInFooter
+import kotlinx.coroutines.CoroutineScope
+
+// Docx
+// TODO - Cuadrar informes
+// Backend
+// TODO - Mejorar prompt chatgpt
+// TODO - Añadir etapa translate
+// Frontend
+// TODO - App: Logout
+// TODO - App: Last records
+// TODO - App: Añadir opciones exportacion
+// TODO - App: Exportar al email
+
+
 
 
 data class NavigationItem(
@@ -225,6 +243,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun MainUI(){
+        val navController = rememberNavController()
         val items = listOf(
             NavigationItem(
                 title = "Home",
@@ -281,7 +300,7 @@ class MainActivity : ComponentActivity() {
                                 },
                                 selected = index == selectedItemIndex,
                                 onClick = {
-//                                            navController.navigate(item.route)
+                                    navController.navigate(item.title)
                                     selectedItemIndex = index
                                     scope.launch {
                                         drawerState.close()
@@ -311,40 +330,54 @@ class MainActivity : ComponentActivity() {
                 drawerState = drawerState,
                 scrimColor = MaterialTheme.colorScheme.secondary
             ) {
-                Scaffold(
-                    topBar = {
-                        TopAppBar(
-                            colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            ),
+                NavHost(navController = navController, startDestination = "Home"){
+                    composable("Home"){homePage(scope, drawerState)}
+                    composable("Records"){recordsPage()}
+                }
 
-                            title = {
-                                Text(text = "AutoActa")
-                            },
-                            navigationIcon = {
-                                IconButton(onClick = {
-                                    scope.launch {
-                                        drawerState.open()
-                                    }
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.Default.Menu,
-                                        contentDescription = "Menu"
-                                    )
-                                }
-                            }
+            }
+        }
+    }
 
-                        )
+    @Composable
+    fun recordsPage(){
+        Text("Records Screen")
+    }
+
+    @Composable
+    fun homePage(scope: CoroutineScope, drawerState: DrawerState ){
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    ),
+
+                    title = {
+                        Text(text = "AutoActa")
                     },
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-
-                ) {innerPadding ->
-                    Box(modifier = Modifier.padding(innerPadding)) {
-                        RecordButton() // Positioned correctly now within the Scaffold's content
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            scope.launch {
+                                drawerState.open()
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = "Menu"
+                            )
+                        }
                     }
 
-                }
+                )
+            },
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+
+        ) {innerPadding ->
+            Box(modifier = Modifier.padding(innerPadding)) {
+                RecordButton() // Positioned correctly now within the Scaffold's content
             }
+
         }
     }
 
@@ -401,7 +434,7 @@ class MainActivity : ComponentActivity() {
 
             // Assuming you're using external cache directory for simplicity
             // Consider using getExternalFilesDir(Environment.DIRECTORY_MUSIC) for production
-            audioFile = File(externalCacheDir, "recorded_audio.3gp")
+            audioFile = File(externalCacheDir, "recorded_audio.wav")
             setOutputFile(audioFile.absolutePath)
 
             try {

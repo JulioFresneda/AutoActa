@@ -1,5 +1,5 @@
 [versions]
-agp = "8.4.0-alpha13"
+agp = "8.4.0-beta01"
 kotlin = "1.9.0"
 coreKtx = "1.10.1"
 junit = "4.13.2"
@@ -23,6 +23,7 @@ coreKotlin = "2.14.12"
 awsJavaSdkApiGateway = "1.12.688"
 core = "2.14.12"
 awsApiAppsync = "2.14.12"
+navigationCompose = "2.7.7"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -54,6 +55,7 @@ core-kotlin = { group = "com.amplifyframework", name = "core-kotlin", version.re
 aws-java-sdk-api-gateway = { group = "com.amazonaws", name = "aws-java-sdk-api-gateway", version.ref = "awsJavaSdkApiGateway" }
 core = { group = "com.amplifyframework", name = "core", version.ref = "core" }
 aws-api-appsync = { group = "com.amplifyframework", name = "aws-api-appsync", version.ref = "awsApiAppsync" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

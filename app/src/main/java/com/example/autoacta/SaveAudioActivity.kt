@@ -201,22 +201,7 @@ fun SaveAudioActivity(onClose: () -> Unit, audioFile: File) {
                         // Call your AWS upload function with the collected data
                         SummaryJobMetadata.uploadToS3(audioFile, jobName, jobDescription, actors)
 
-                        val options = RestOptions.builder()
 
-                            .addPath("/trigger")
-
-                            .addBody("{\"configFilePath\":\"user1/carlosbaute/config.json\"}".toByteArray())
-
-                            .build()
-
-
-                        Amplify.API.post(options,
-
-                            { Log.i("MyAmplifyApp", "POST succeeded: $it") },
-
-                            { Log.e("MyAmplifyApp", "POST failed", it) }
-
-                        )
 
 
                         // Then close the composable

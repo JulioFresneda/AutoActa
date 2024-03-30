@@ -9,17 +9,18 @@ object SummaryJobMetadata {
     fun uploadToS3(audioFile: File, jobName: String, jobDescription: String, actors: String) {
         // Serialization to JSON can happen here if needed
         var language = "es"
-        var audioFilename = "user1/$jobName/$jobName.wav"
+        var audioFilename = "$jobName.wav"
         val key = "user1/$jobName/config.json"
-        val path = "user1/$jobName"
+        val path = "public/user1/$jobName"
+        val keyAudio = "user1/$jobName/$jobName.wav"
 
         val summaryData = mapOf(
             "jobName" to jobName,
-            "jobDescription" to jobDescription,
+            "description" to jobDescription,
             "actors" to actors,
-            language to language,
-            audioFilename to audioFilename,
-            path to path
+            "language" to language,
+            "audioFilename" to audioFilename,
+            "path" to path
         )
 
         val jsonData = Gson().toJson(summaryData)
@@ -38,7 +39,7 @@ object SummaryJobMetadata {
 
 
 
-        Amplify.Storage.uploadFile(audioFilename, audioFile,
+        Amplify.Storage.uploadFile(keyAudio, audioFile,
 
             { Log.i("MyAmplifyApp", "Successfully file uploaded: ${it.key}") },
 
