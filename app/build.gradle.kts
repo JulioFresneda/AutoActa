@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.core)
     implementation(libs.aws.api.appsync)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.accompanist.swiperefresh)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

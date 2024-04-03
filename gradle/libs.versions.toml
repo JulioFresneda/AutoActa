@@ -1,5 +1,5 @@
 [versions]
-agp = "8.4.0-beta01"
+agp = "8.5.0-alpha02"
 kotlin = "1.9.0"
 coreKtx = "1.10.1"
 junit = "4.13.2"
@@ -24,6 +24,7 @@ awsJavaSdkApiGateway = "1.12.688"
 core = "2.14.12"
 awsApiAppsync = "2.14.12"
 navigationCompose = "2.7.7"
+accompanistSwiperefresh = "0.35.0-alpha"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -56,6 +57,7 @@ aws-java-sdk-api-gateway = { group = "com.amazonaws", name = "aws-java-sdk-api-g
 core = { group = "com.amplifyframework", name = "core", version.ref = "core" }
 aws-api-appsync = { group = "com.amplifyframework", name = "aws-api-appsync", version.ref = "awsApiAppsync" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+accompanist-swiperefresh = { group = "com.google.accompanist", name = "accompanist-swiperefresh", version.ref = "accompanistSwiperefresh" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

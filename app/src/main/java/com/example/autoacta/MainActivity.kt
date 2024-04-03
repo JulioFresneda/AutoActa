@@ -1,5 +1,7 @@
 package com.example.autoacta
 
+import S3Comms
+import S3Comms.listSummaries
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.os.Bundle
@@ -22,6 +24,7 @@ import java.io.IOException
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +34,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Home
@@ -42,7 +46,6 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -59,6 +62,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -69,6 +74,8 @@ import kotlinx.coroutines.launch
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -82,7 +89,9 @@ import com.amplifyframework.ui.authenticator.forms.FieldKey
 
 import com.amplifyframework.ui.authenticator.ui.Authenticator
 import com.amplifyframework.ui.authenticator.ui.SignInFooter
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.CoroutineScope
+import androidx.compose.foundation.lazy.items
 
 // Docx
 // TODO - Cuadrar informes
@@ -251,7 +260,7 @@ class MainActivity : ComponentActivity() {
                 unselectedIcon = Icons.Outlined.Home,
             ),
             NavigationItem(
-                title = "Records",
+                title = "Summaries",
                 selectedIcon = Icons.Filled.Call,
                 unselectedIcon = Icons.Outlined.Call,
             ),
@@ -286,6 +295,8 @@ class MainActivity : ComponentActivity() {
                 selectedBadgeColor = MaterialTheme.colorScheme.secondary, // Custom badge color when item is selected
                 unselectedBadgeColor = MaterialTheme.colorScheme.secondary // Custom badge color when item is unselected
             )
+
+
             ModalNavigationDrawer(
                 drawerContent = {
 
@@ -330,56 +341,94 @@ class MainActivity : ComponentActivity() {
                 drawerState = drawerState,
                 scrimColor = MaterialTheme.colorScheme.secondary
             ) {
-                NavHost(navController = navController, startDestination = "Home"){
-                    composable("Home"){homePage(scope, drawerState)}
-                    composable("Records"){recordsPage()}
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            ),
+
+                            title = {
+                                Text(text = "AutoActa")
+                            },
+                            navigationIcon = {
+                                IconButton(onClick = {
+                                    scope.launch {
+                                        drawerState.open()
+                                    }
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Menu,
+                                        contentDescription = "Menu"
+                                    )
+                                }
+                            }
+
+                        )
+                    },
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+
+                ) { innerPadding ->
+                    NavHost(
+                        navController = navController,
+                        startDestination = "Home",
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
+                        composable("Home") { homePage() }
+                        composable("Summaries") { summariesPage() }
+                    }
                 }
 
             }
+
         }
     }
 
+
+
+
+
     @Composable
-    fun recordsPage(){
-        Text("Records Screen")
+    fun homePage(){
+
+        Box() {
+            RecordButton() // Positioned correctly now within the Scaffold's content
+        }
     }
-
     @Composable
-    fun homePage(scope: CoroutineScope, drawerState: DrawerState ){
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    ),
+    fun ListSummariesButton(){
+        val context = LocalContext.current
+        val coroutineScope = rememberCoroutineScope()
 
-                    title = {
-                        Text(text = "AutoActa")
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            scope.launch {
-                                drawerState.open()
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu"
-                            )
+        Box(
+            contentAlignment = Alignment.Center, // Align the button to the center of the Box
+            modifier = Modifier.fillMaxSize() // Box occupies the entire screen
+        ){
+            Button(onClick = {
+                coroutineScope.launch {
+                    try {
+                        val summaries = listSummaries(context)
+                        summaries.forEach { summary ->
+                            Log.i("ListSummariesGetted", "Summary: $summary")
                         }
+                    } catch (e: Exception) {
+                        Log.e("ListSummariesGetted", "Error getting summaries", e)
                     }
-
-                )
-            },
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-
-        ) {innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding)) {
-                RecordButton() // Positioned correctly now within the Scaffold's content
+                }
+            }, colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)) {
+                Text("List summaries")
             }
-
         }
+
+
     }
+
+
+
+
+
+
+
 
     @Composable
     fun RecordButton() {

@@ -1,6 +1,5 @@
 package com.example.autoacta
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
@@ -48,8 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.wear.compose.material.ContentAlpha
-import com.amplifyframework.api.rest.RestOptions
-import com.amplifyframework.core.Amplify
 import kotlinx.coroutines.delay
 import java.io.File
 
@@ -199,7 +196,7 @@ fun SaveAudioActivity(onClose: () -> Unit, audioFile: File) {
                 SaveAndCloseButtons(
                     onMakeSummary = {
                         // Call your AWS upload function with the collected data
-                        SummaryJobMetadata.uploadToS3(audioFile, jobName, jobDescription, actors)
+                        S3Comms.uploadToS3(audioFile, jobName, jobDescription, actors)
 
 
 
