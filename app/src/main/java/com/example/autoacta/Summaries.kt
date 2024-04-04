@@ -108,6 +108,7 @@ fun summariesPage(){
             }
         }
 
+
         if (isLoading) {
             var progress by remember { mutableFloatStateOf(0.1F) }
 

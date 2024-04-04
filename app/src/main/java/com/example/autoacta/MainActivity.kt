@@ -98,9 +98,8 @@ import androidx.compose.foundation.lazy.items
 // Backend
 // TODO - Mejorar prompt chatgpt
 // TODO - Añadir etapa translate
+// TODO - Users privados
 // Frontend
-// TODO - App: Logout
-// TODO - App: Last records
 // TODO - App: Añadir opciones exportacion
 // TODO - App: Exportar al email
 
@@ -376,6 +375,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable("Home") { homePage() }
                         composable("Summaries") { summariesPage() }
+                        composable("Settings") { settingsPage() }
                     }
                 }
 
@@ -395,33 +395,7 @@ class MainActivity : ComponentActivity() {
             RecordButton() // Positioned correctly now within the Scaffold's content
         }
     }
-    @Composable
-    fun ListSummariesButton(){
-        val context = LocalContext.current
-        val coroutineScope = rememberCoroutineScope()
 
-        Box(
-            contentAlignment = Alignment.Center, // Align the button to the center of the Box
-            modifier = Modifier.fillMaxSize() // Box occupies the entire screen
-        ){
-            Button(onClick = {
-                coroutineScope.launch {
-                    try {
-                        val summaries = listSummaries(context)
-                        summaries.forEach { summary ->
-                            Log.i("ListSummariesGetted", "Summary: $summary")
-                        }
-                    } catch (e: Exception) {
-                        Log.e("ListSummariesGetted", "Error getting summaries", e)
-                    }
-                }
-            }, colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)) {
-                Text("List summaries")
-            }
-        }
-
-
-    }
 
 
 
