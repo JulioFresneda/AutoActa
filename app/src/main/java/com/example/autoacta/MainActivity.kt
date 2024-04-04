@@ -98,7 +98,6 @@ import androidx.compose.foundation.lazy.items
 // Backend
 // TODO - Mejorar prompt chatgpt
 // TODO - Añadir etapa translate
-// TODO - Users privados
 // Frontend
 // TODO - App: Añadir opciones exportacion
 // TODO - App: Exportar al email
@@ -225,27 +224,44 @@ class MainActivity : ComponentActivity() {
     }
 
 
-    fun SetUpLogin(){
-        try {
-
-            Amplify.Auth.signInWithSocialWebUI(
-
-                AuthProvider.google(),
-
-                this,
-
-                { val intent = intent
-                  finish()
-                  startActivity(intent)},
-
-                { Log.e("AuthQuickstart", "Sign in failed", it) }
-
-            )
-            Log.i("MyAmplifyApp", "Initialized Amplify")
-        } catch (error: AmplifyException) {
-            Log.e("MyAmplifyApp", "Could not initialize Amplify", error)
-        }
+    // Sets up login using AWS Amplify with Google as the social sign-in provider.
+    fun SetUpLogin() {
+        Amplify.Auth.fetchAuthSession(
+            { result ->
+                if (!result.isSignedIn) {
+                    // No user is signed in, proceed with the sign-in process
+                    try {
+                        Amplify.Auth.signInWithSocialWebUI(
+                            AuthProvider.google(),
+                            this,
+                            {
+                                // Handle successful sign-in
+                                val intent = intent
+                                finish()  // Finish the current activity
+                                startActivity(intent)  // Restart the activity
+                            },
+                            {
+                                // Handle sign-in failure
+                                Log.e("AuthQuickstart", "Sign in failed", it)
+                            }
+                        )
+                    } catch (error: AmplifyException) {
+                        // Log initialization failure
+                        Log.e("MyAmplifyApp", "Could not initialize Amplify", error)
+                    }
+                } else {
+                    // User is already signed in, handle accordingly
+                    Log.i("MyAmplifyApp", "User is already signed in.")
+                    // Here, you can redirect the user to the main activity or refresh the current activity
+                }
+            },
+            { error ->
+                // Handle error in fetching the auth session
+                Log.e("MyAmplifyApp", "Error fetching auth session", error)
+            }
+        )
     }
+
 
 
 
