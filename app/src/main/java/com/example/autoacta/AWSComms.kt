@@ -39,7 +39,8 @@ object S3Comms {
         val description: String,
         val actors: String,
         val language: String,
-        val audioFilename: String
+        val audioFilename: String,
+        val email: String
     )
 
 
@@ -61,6 +62,20 @@ object S3Comms {
             },
             { error ->
                 Log.e("AuthQuickStart", "Failed to fetch session", error)
+                onResult(null)
+            }
+        )
+    }
+
+    fun fetchEmail(onResult: (String?) -> Unit) {
+        Amplify.Auth.fetchUserAttributes(
+            { attributes ->
+                val emailAttribute = attributes.find { it.key.keyString == "email" }
+                val fetchedEmail = emailAttribute?.value
+                onResult(fetchedEmail)
+            },
+            { error ->
+                Log.e("AuthQuickStart", "Failed to fetch user attributes", error)
                 onResult(null)
             }
         )
@@ -161,7 +176,7 @@ object S3Comms {
 
 
 
-    fun uploadToS3(audioFile: File, jobName: String, jobDescription: String, actors: String) {
+    fun uploadToS3(audioFile: File, jobName: String, jobDescription: String, actors: String, email: String) {
         val language = "es"  // Set the language or make it dynamic as needed
         val audioFilename = "$jobName.wav"
 
@@ -171,7 +186,8 @@ object S3Comms {
             description = jobDescription,
             actors = actors,
             language = language,
-            audioFilename = audioFilename
+            audioFilename = audioFilename,
+            email = email
         )
 
         val keyConfig = "${jobConfig.jobName}/config.json"

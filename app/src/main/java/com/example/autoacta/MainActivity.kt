@@ -1,7 +1,5 @@
 package com.example.autoacta
 
-import S3Comms
-import S3Comms.listSummaries
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.os.Bundle
@@ -24,17 +22,12 @@ import java.io.IOException
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.Alignment
 
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Home
@@ -55,15 +48,13 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -73,34 +64,30 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.amplifyframework.AmplifyException
 import com.amplifyframework.api.aws.AWSApiPlugin
-import com.amplifyframework.auth.AuthProvider
 import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin
 import com.amplifyframework.core.Amplify
 import com.amplifyframework.storage.s3.AWSS3StoragePlugin
-import com.amplifyframework.ui.authenticator.forms.FieldKey
 
 import com.amplifyframework.ui.authenticator.ui.Authenticator
-import com.amplifyframework.ui.authenticator.ui.SignInFooter
-import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.CoroutineScope
-import androidx.compose.foundation.lazy.items
+import com.yourapp.ui.com.example.autoacta.AuthenticatorScreen.SetUpLoginWithGoogle
+import com.yourapp.ui.com.example.autoacta.AuthenticatorScreen.isUserSignedIn
+import com.yourapp.ui.com.example.autoacta.SignInForm
 
+// TODO - Formatear codigo
 // Docx
 // TODO - Cuadrar informes
 // Backend
 // TODO - Mejorar prompt chatgpt
 // TODO - Añadir etapa translate
+// TODO - Mejorar sign in
 // Frontend
-// TODO - App: Añadir opciones exportacion
-// TODO - App: Exportar al email
+// TODO - Añadir opciones exportacion
+
 
 
 
@@ -144,80 +131,34 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
-            Authenticator(
-                signInContent = { state ->
-                    val scope = rememberCoroutineScope()
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize() // Fill the max size of the parent
-                            .padding(16.dp), // Add padding around the Column
-                        verticalArrangement = Arrangement.Center, // Center items vertically
-                        horizontalAlignment = Alignment.CenterHorizontally // Center items horizontally
-                    ) {
-                        val email = state.form.fields[FieldKey.Email]!!.state.content
-                        val password = state.form.fields[FieldKey.Password]!!.state.content
-
-                        // Use a nicer looking TextField, Material Design by default
-                        OutlinedTextField(
-                            value = email,
-                            onValueChange = { newValue ->
-                                // Ensure the new value is updated properly in your state management
-                                state.form.fields[FieldKey.Email]!!.state.content = newValue
-                            },
-                            label = { Text("Email") },
-                            singleLine = true, // Makes the TextField a single line input
-                            modifier = Modifier.fillMaxWidth(0.8f) // Use 80% of the width
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp)) // Add space between the text fields
-
-                        OutlinedTextField(
-                            value = password,
-                            onValueChange = { newValue ->
-                                // Ensure the new value is updated properly in your state management
-                                state.form.fields[FieldKey.Password]!!.state.content = newValue
-                            },
-                            label = { Text("Password") },
-                            singleLine = true, // Makes the TextField a single line input
-                            visualTransformation = PasswordVisualTransformation(), // Hides the password input
-                            modifier = Modifier.fillMaxWidth(0.8f) // Use 80% of the width
-                        )
-
-                        Spacer(modifier = Modifier.height(24.dp)) // Add space between the TextField and Button
-
-                        Button(
-                            onClick = { scope.launch { state.signIn() } },
-                            modifier = Modifier.align(Alignment.CenterHorizontally) // Center the button
-                        ) {
-                            Text("Sign In")
-                        }
-
-                        // If you have a footer, you can place it here,
-                        // or consider customizing it further as needed.
-                        SignInFooter(state)
+            val isAuthenticated = remember { mutableStateOf(false) }
 
 
-                        Button(
-                            onClick = { SetUpLogin()},
-                            modifier = Modifier.align(Alignment.CenterHorizontally) // Center the button
-                        ) {
-                            Text("Sign In With Google")
-                        }
-                    }
-                }
-            )
-            { state ->
-                AutoActaTheme {
-                    MainUI()
+
+            AutoActaTheme {
+                if (isAuthenticated.value) {
+                    MainUI(isAuthenticated)
                     if (showMakeSummaryDialog) {
                         // Show the full-screen composable when requested
                         SaveAudioActivityBack(
                             showContent = showMakeSummaryDialog,
                             onShowContentChange = { showMakeSummaryDialog = it },
-                            audioFile = audioFile)
+                            audioFile = audioFile
+                        )
                     }
-
-
+                } else {
+                    Authenticator(
+                        signInContent = { state ->
+                            val scope = rememberCoroutineScope()
+                            SignInForm(
+                                state,
+                                scope,
+                                SetUpLoginWithGoogle = { SetUpLoginWithGoogle(this, isAuthenticated) })
+                        }
+                    )
+                    {
+                        isAuthenticated.value = true
+                    }
                 }
             }
         }
@@ -225,48 +166,13 @@ class MainActivity : ComponentActivity() {
 
 
     // Sets up login using AWS Amplify with Google as the social sign-in provider.
-    fun SetUpLogin() {
-        Amplify.Auth.fetchAuthSession(
-            { result ->
-                if (!result.isSignedIn) {
-                    // No user is signed in, proceed with the sign-in process
-                    try {
-                        Amplify.Auth.signInWithSocialWebUI(
-                            AuthProvider.google(),
-                            this,
-                            {
-                                // Handle successful sign-in
-                                val intent = intent
-                                finish()  // Finish the current activity
-                                startActivity(intent)  // Restart the activity
-                            },
-                            {
-                                // Handle sign-in failure
-                                Log.e("AuthQuickstart", "Sign in failed", it)
-                            }
-                        )
-                    } catch (error: AmplifyException) {
-                        // Log initialization failure
-                        Log.e("MyAmplifyApp", "Could not initialize Amplify", error)
-                    }
-                } else {
-                    // User is already signed in, handle accordingly
-                    Log.i("MyAmplifyApp", "User is already signed in.")
-                    // Here, you can redirect the user to the main activity or refresh the current activity
-                }
-            },
-            { error ->
-                // Handle error in fetching the auth session
-                Log.e("MyAmplifyApp", "Error fetching auth session", error)
-            }
-        )
-    }
+
 
 
 
 
     @Composable
-    fun MainUI(){
+    fun MainUI(isAuthenticated: MutableState<Boolean>){
         val navController = rememberNavController()
         val items = listOf(
             NavigationItem(
@@ -391,7 +297,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable("Home") { homePage() }
                         composable("Summaries") { summariesPage() }
-                        composable("Settings") { settingsPage() }
+                        composable("Settings") { settingsPage(isAuthenticated) }
                     }
                 }
 

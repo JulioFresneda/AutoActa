@@ -1,5 +1,6 @@
 package com.example.autoacta
 
+import S3Comms.fetchEmail
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
@@ -86,6 +87,15 @@ fun SaveAudioActivity(onClose: () -> Unit, audioFile: File) {
     var jobName by remember { mutableStateOf("") }
     var jobDescription by remember { mutableStateOf("") }
     var actors by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        fetchEmail { result ->
+            if (result != null) {
+                email = result
+            }
+        }
+    }
 
     val isVisible = remember { mutableStateOf(false) }
 
@@ -118,7 +128,7 @@ fun SaveAudioActivity(onClose: () -> Unit, audioFile: File) {
             modifier = Modifier
                 .zIndex(1f)
                 .fillMaxSize()
-                .padding(horizontal = 10.dp, vertical = 150.dp)
+                .padding(horizontal = 10.dp, vertical = 10.dp)
                 .clip(RoundedCornerShape(40.dp))
                 .background(color = MaterialTheme.colorScheme.background),
             contentAlignment = Alignment.Center,
@@ -187,7 +197,15 @@ fun SaveAudioActivity(onClose: () -> Unit, audioFile: File) {
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
+                OutlinedTextField(
+                    colors = outlinedColors,
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email to export") },
+                    singleLine = true
+                )
 
+                Spacer(modifier = Modifier.height(16.dp))
 
                 FoldersDropdown()
 
@@ -196,7 +214,7 @@ fun SaveAudioActivity(onClose: () -> Unit, audioFile: File) {
                 SaveAndCloseButtons(
                     onMakeSummary = {
                         // Call your AWS upload function with the collected data
-                        S3Comms.uploadToS3(audioFile, jobName, jobDescription, actors)
+                        S3Comms.uploadToS3(audioFile, jobName, jobDescription, actors, email)
 
 
 
