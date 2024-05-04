@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.autoacta"
+    namespace = "com.logicallynx.myapp"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.autoacta"
+        applicationId = "com.logicallynx.myapp"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -69,6 +69,8 @@ dependencies {
     implementation(libs.aws.api.appsync)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.accompanist.swiperefresh)
+    implementation(libs.aws.datastore)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

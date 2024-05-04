@@ -24,7 +24,12 @@ awsJavaSdkApiGateway = "1.12.688"
 core = "2.14.12"
 awsApiAppsync = "2.14.12"
 navigationCompose = "2.7.7"
-accompanistSwiperefresh = "0.35.0-alpha"
+accompanistSwiperefresh = "0.34.0"
+material3Android = "1.2.1"
+awsDatastore = "2.15.2"
+tika = "3.0.0-BETA"
+tikaEvalCore = "3.0.0-BETA"
+tikaApp = "3.0.0-BETA"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -58,6 +63,11 @@ core = { group = "com.amplifyframework", name = "core", version.ref = "core" }
 aws-api-appsync = { group = "com.amplifyframework", name = "aws-api-appsync", version.ref = "awsApiAppsync" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 accompanist-swiperefresh = { group = "com.google.accompanist", name = "accompanist-swiperefresh", version.ref = "accompanistSwiperefresh" }
+androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }
+aws-datastore = { group = "com.amplifyframework", name = "aws-datastore", version.ref = "awsDatastore" }
+tika = { group = "org.apache.tika", name = "tika", version = "2.9.2" }
+tika-eval-core = { group = "org.apache.tika", name = "tika-eval-core", version.ref = "tikaEvalCore" }
+tika-app = { group = "org.apache.tika", name = "tika-app", version.ref = "tikaApp" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
