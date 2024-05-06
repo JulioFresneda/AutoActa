@@ -23,7 +23,9 @@ private val LightColorScheme = lightColorScheme(
         secondary = StrongBlack,
         tertiary = SoftOrange,
         primary = StrongBeige,
-        secondaryContainer = SoftBlack
+        secondaryContainer = SoftBlack,
+        onSecondary = SoftGreen
+
 
 
 

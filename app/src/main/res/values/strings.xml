@@ -1,5 +1,45 @@
 <resources>
     <string name="app_name">AutoActa</string>
-    <string name="title_activity_record">Record</string>
-    <string name="title_activity_lateral_menu">LateralMenuActivity</string>
+    <string name="mm_min_remaining_1">"You have "</string>
+    <string name="mm_min_remaining_2">" minutes availables out of "</string>
+    <string name="home">Record</string>
+    <string name="summaries">Summaries</string>
+    <string name="account">Account</string>
+    <string name="search">Search</string>
+    <string name="s_date">Date</string>
+    <string name="s_email">Email</string>
+    <string name="s_tags">Tags</string>
+    <string name="s_desc">Description</string>
+    <string name="s_share">Share</string>
+    <string name="close">Close</string>
+    <string name="finish">Finish</string>
+    <string name="mm_sum_name">Summary name</string>
+    <string name="mm_sum_desc">Summary description</string>
+    <string name="mm_email_export">Email to export</string>
+    <string name="mm_make">Make summary</string>
+    <string name="discard">Discard</string>
+    <string name="mm_confirm_discard_title">Confirm Discard</string>
+    <string name="mm_confirm_discard_desc">Are you sure you want to discard your record?</string>
+    <string name="cancel">Cancel</string>
+    <string name="acc_upgrade">Upgrade to premium!</string>
+    <string name="acc_upgrade_desc">"For now, premium plan is not available. If you want some custom plan, send us an email at "</string>
+    <string name="aa_lang">Select the language that will be used in the conversations that you want to record. By default, AutoActa will choose the same as the language of this smartphone.</string>
+    <string name="signout">Sign Out</string>
+    <string name="welcome">Welcome to AutoActa!</string>
+    <string name="si_title">Sign in or create an account</string>
+    <string name="pass">Password</string>
+    <string name="signin">Sign In</string>
+    <string name="forgot_pass">Forgot Password?</string>
+    <string name="create_account">Create Account</string>
+    <string name="si_w_google">Sign in with Google</string>
+    <string name="toast_onyourway">Your summary is on your way. Please, wait a few minutes!</string>
+    <string name="toast_pdf_not_ready">Your PDF is not ready yet!</string>
+    <string name="toast_docx_not_ready">Your document is not ready yet!</string>
+    <string name="mm_aa_desc">AutoActa is your personal secretary.\n\nIt summarizes your conversation, gives you the key points and future tasks talked about, and the complete transcription too.\n\nThe report is sent to your email.\nKeep in mind that AutoActa uses a generative AI, that means, if the conversation is too short, it can hallucinate.\n\nIn consequence, it is recommended that the conversation last at least one minute.</string>
+    <string name="mm_aa_text">Just press the button and start to talk!</string>
+    <string name="mm_aa_desc_title">What AutoActa does?</string>
+    <string name="valid_text">Please, enter valid text</string>
+    <string name="mm_rec_fin">Record finished</string>
+
+
 </resources>

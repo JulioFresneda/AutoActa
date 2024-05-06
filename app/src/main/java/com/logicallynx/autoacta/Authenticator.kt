@@ -35,8 +35,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
-import com.logicallynx.myapp.R
+import com.logicallynx.autoacta.R
 
 // Import other necessary dependencies
 
@@ -60,7 +61,7 @@ fun SignInForm(state: SignInState, scope: CoroutineScope, SetUpLoginWithGoogle: 
 
             val typewriterFontStyle = TextStyle(
                 fontFamily = typewriterFontFamily,
-                fontSize = 30.sp,
+                fontSize = 20.sp,
                 brush = Brushes.gradient5(
                     start = Offset.Zero,
                     end = Offset.Infinite,
@@ -74,7 +75,7 @@ fun SignInForm(state: SignInState, scope: CoroutineScope, SetUpLoginWithGoogle: 
 
 
 
-            Text("Welcome to AutoActa!", style = typewriterFontStyle)
+            Text(LocalContext.current.getString(R.string.welcome), style = typewriterFontStyle)
         }
         Column(
             modifier = Modifier
@@ -90,7 +91,7 @@ fun SignInForm(state: SignInState, scope: CoroutineScope, SetUpLoginWithGoogle: 
 
 
             Spacer(modifier = Modifier.height(40.dp))
-            Text("Sign in or create an account", style = MaterialTheme.typography.headlineSmall)
+            Text(LocalContext.current.getString(R.string.si_title), style = MaterialTheme.typography.headlineSmall)
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -101,7 +102,7 @@ fun SignInForm(state: SignInState, scope: CoroutineScope, SetUpLoginWithGoogle: 
                     // Ensure the new value is updated properly in your state management
                     state.form.fields[FieldKey.Email]!!.state.content = newValue
                 },
-                label = { Text("Email") },
+                label = { Text(LocalContext.current.getString(R.string.s_email)) },
                 singleLine = true, // Makes the TextField a single line input
                 modifier = Modifier.fillMaxWidth(0.8f) // Use 80% of the width
             )
@@ -114,7 +115,7 @@ fun SignInForm(state: SignInState, scope: CoroutineScope, SetUpLoginWithGoogle: 
                     // Ensure the new value is updated properly in your state management
                     state.form.fields[FieldKey.Password]!!.state.content = newValue
                 },
-                label = { Text("Password") },
+                label = { Text(LocalContext.current.getString(R.string.pass)) },
                 singleLine = true, // Makes the TextField a single line input
                 visualTransformation = PasswordVisualTransformation(), // Hides the password input
                 modifier = Modifier.fillMaxWidth(0.8f) // Use 80% of the width
@@ -126,7 +127,7 @@ fun SignInForm(state: SignInState, scope: CoroutineScope, SetUpLoginWithGoogle: 
                 onClick = { scope.launch { state.signIn() } },
                 modifier = Modifier.align(Alignment.CenterHorizontally) // Center the button
             ) {
-                Text("Sign In")
+                Text(LocalContext.current.getString(R.string.signin))
             }
 
             // If you have a footer, you can place it here,
@@ -144,7 +145,7 @@ fun SignInForm(state: SignInState, scope: CoroutineScope, SetUpLoginWithGoogle: 
                 {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.android_light_rd_si),
-                        contentDescription = "Sign in with google",
+                        contentDescription = LocalContext.current.getString(R.string.si_w_google),
                         tint = Color.Unspecified
                     )
                 }

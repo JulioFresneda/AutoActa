@@ -1,4 +1,4 @@
-package com.logicallynx.myapp
+package com.logicallynx.autoacta
 
 import android.media.MediaPlayer
 import android.os.Bundle

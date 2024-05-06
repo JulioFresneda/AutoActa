@@ -28,7 +28,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="myapp" />
+                <data android:scheme="autoacta" />
 
             </intent-filter>
 
@@ -37,7 +37,6 @@
         <activity
             android:name=".RecordActivity"
             android:exported="false"
-            android:label="@string/title_activity_record"
             android:theme="@style/Theme.AutoActa" />
         <activity
             android:name=".MainActivity"

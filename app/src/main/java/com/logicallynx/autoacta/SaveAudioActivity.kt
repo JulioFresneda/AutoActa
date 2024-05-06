@@ -135,7 +135,7 @@ fun TagInputField(title: String, onTagsChanged: (List<String>) -> Unit) {
         colors = TextFieldDefaults.colors(focusedContainerColor = Color.White, unfocusedContainerColor = Color.White),
         value = text,
         onValueChange = { text = it },
-        label = { Text("Tags") },
+        label = { Text(LocalContext.current.getString(R.string.s_tags)) },
         singleLine = true,
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = {
@@ -226,13 +226,13 @@ fun SaveAudioCategory(title: String, content: (String) -> Unit, defaultContent: 
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    var text by remember { mutableStateOf(defaultContent) }
+    var text = remember { mutableStateOf(defaultContent) }
 
     TextField(
-        value = text,
+        value = text.value,
         onValueChange = {
             isValid = it.isNotEmpty()
-            text = it
+            text.value = it
             content(it)  // Callback invoked with the current text
         },
         isError = !isValid && fillBeforeMake,
@@ -241,7 +241,7 @@ fun SaveAudioCategory(title: String, content: (String) -> Unit, defaultContent: 
         modifier = Modifier.fillMaxWidth()
     )
     if (!isValid&& fillBeforeMake) {
-        Text(text = "Please enter valid text", color = Color.Red)
+        Text(text = LocalContext.current.getString(R.string.valid_text), color = Color.Red)
     }
     Spacer(modifier = Modifier.height(16.dp))
 
@@ -318,7 +318,7 @@ fun SaveAudioActivity(
 
             ) {
                 Box( modifier = Modifier
-                    .fillMaxWidth(0.5f)
+                    .fillMaxWidth(0.7f)
                     .padding(5.dp)
                     .background(
                         MaterialTheme.colorScheme.primary,
@@ -326,7 +326,7 @@ fun SaveAudioActivity(
                     ),
                     contentAlignment = Alignment.Center){
                     Text(
-                        text = "Record finished",
+                        text = LocalContext.current.getString(R.string.mm_rec_fin),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
@@ -340,9 +340,9 @@ fun SaveAudioActivity(
 
 
                 Column(modifier = Modifier.fillMaxWidth(fraction = 0.8f)){
-                    SaveAudioCategory(title = "Summary name", content = {newText -> jobName = newText}, fillBeforeMake = fillBeforeMake.value)
-                    SaveAudioCategory(title = "Summary description", content = {newText -> jobDescription = newText}, fillBeforeMake = fillBeforeMake.value)
-                    SaveAudioCategory(title = "Email to export", content = {newText -> email = newText}, defaultContent = email, fillBeforeMake = fillBeforeMake.value)
+                    SaveAudioCategory(title = LocalContext.current.getString(R.string.mm_sum_name), content = {newText -> jobName = newText}, fillBeforeMake = fillBeforeMake.value)
+                    SaveAudioCategory(title = LocalContext.current.getString(R.string.mm_sum_desc), content = {newText -> jobDescription = newText}, fillBeforeMake = fillBeforeMake.value)
+                    SaveAudioCategory(title = LocalContext.current.getString(R.string.mm_email_export), content = {newText -> email = newText}, defaultContent = email, fillBeforeMake = fillBeforeMake.value)
                     TagInputField(
                         title = "Tags",
                         onTagsChanged = { updatedTags ->
@@ -394,33 +394,33 @@ fun SaveAudioActivity(
 
                             fetchRemainingMinutesWithCallbacks(object :
                                 S3Comms.FetchMinutesCallback {
-                                override fun onSuccess(minutes: Int) {
-                                    var remainingMinutes = minutes
+                                    override fun onSuccess(minutes: Int) {
+                                        var remainingMinutes = minutes
 
-                                    val durationMillis = getAudioDuration(audioFile)
-                                    var durationMinutes =
-                                        TimeUnit.MILLISECONDS.toMinutes(durationMillis).toInt()
-                                    if (durationMinutes == 0) {
-                                        durationMinutes = 1
-                                    }
+                                        val durationMillis = getAudioDuration(audioFile)
+                                        var durationMinutes =
+                                            TimeUnit.MILLISECONDS.toMinutes(durationMillis).toInt()
+                                        if (durationMinutes == 0) {
+                                            durationMinutes = 1
+                                        }
 
-                                    remainingMinutes -= durationMinutes
-                                    Log.i("DiscountMinutes", remainingMinutes.toString())
+                                        remainingMinutes -= durationMinutes
+                                        Log.i("DiscountMinutes", remainingMinutes.toString())
 
-                                    // Update the minutes on the server
-                                    S3Comms.updateRemainingMinutes(remainingMinutes)
+                                        // Update the minutes on the server
+                                        S3Comms.updateRemainingMinutes(remainingMinutes)
 
-                                    // Call your AWS upload function with the collected data
-                                    S3Comms.uploadToS3(
-                                        audioFile,
-                                        jobName,
-                                        jobDescription,
-                                        email,
-                                        tags
-                                    )
+                                        // Call your AWS upload function with the collected data
+                                        S3Comms.uploadToS3(
+                                            audioFile,
+                                            jobName,
+                                            jobDescription,
+                                            email,
+                                            tags
+                                        )
 
-                                    // Then close the composable
-                                    onClose()
+                                        // Then close the composable
+                                        onClose()
 
 
                                 }
@@ -431,7 +431,7 @@ fun SaveAudioActivity(
                                 }
                             })
 
-                            Toast.makeText(context, "Your summary is on your way. Please, wait a few minutes!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.toast_onyourway), Toast.LENGTH_SHORT).show()
 
                         }
 
@@ -471,16 +471,16 @@ fun SaveAudioActivity(
 fun ConfirmDiscardDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Confirm Discard") },
-        text = { Text("Are you sure you want to discard your record?", color = MaterialTheme.colorScheme.primaryContainer) },
+        title = { Text(LocalContext.current.getString(R.string.mm_confirm_discard_title)) },
+        text = { Text(LocalContext.current.getString(R.string.mm_confirm_discard_desc), color = MaterialTheme.colorScheme.primaryContainer) },
         confirmButton = {
             Button(onClick = onConfirm) {
-                Text("Discard")
+                Text(LocalContext.current.getString(R.string.discard))
             }
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text("Cancel")
+                Text(LocalContext.current.getString(R.string.cancel))
             }
         },
         containerColor = MaterialTheme.colorScheme.secondary
@@ -504,71 +504,7 @@ data class TranslateConfig(
     val source: String,
     val target: String
 )
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun LanguageDropdown(onLanguageSelected: (LanguageOption) -> Unit) {
-    // Sample language options
-    val languages = Locale.getAvailableLocales().map { locale ->
-        LanguageOption(locale.language,
-            locale.getDisplayLanguage(Locale.getDefault())
-                .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
-    }.distinctBy { it.code }.sortedBy { it.name }
-
-    // Get the current device language
-    val defaultLanguageCode = Locale.getDefault().language
-
-    // Find the matching LanguageOption for the device's default language
-    val defaultLanguageOption = languages.find { it.code == defaultLanguageCode }
-        ?: LanguageOption("", "Select Language")
-
-    var selectedLanguage by remember { mutableStateOf(defaultLanguageOption) }
-    var expanded by remember { mutableStateOf(false) }
-
-    var exposedColors = ExposedDropdownMenuDefaults.textFieldColors(
-        focusedContainerColor = Color.White,
-        unfocusedContainerColor = Color.Black,
-        cursorColor = Color.Black,
-        focusedLabelColor = Color.Black, // Color for the label when the TextField is focused
-        unfocusedLabelColor = Color.Black.copy(alpha = ContentAlpha.disabled), // Color for the label when the TextField is unfocused
-
-    )
-
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = {  }
-    ) {
-        TextField(
-            value = selectedLanguage.name,
-            onValueChange = { },
-            readOnly = true, // Makes the TextField non-editable
-            trailingIcon = {
-                IconButton(onClick = { expanded = !expanded }) {
-                    Icon(
-                        imageVector = if (expanded) Icons.Filled.ArrowDropDown else Icons.Filled.ArrowDropDown,
-                        contentDescription = if (expanded) "Close menu" else "Open menu"
-                    )
-                }
-            },
-            colors = exposedColors,
-            modifier = Modifier.menuAnchor()
-        )
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            languages.forEach { language ->
-                DropdownMenuItem(
-                    text = { Text(language.name) },
-                    onClick = {
-                        selectedLanguage = language
-                        onLanguageSelected(language)
-                        expanded = false
-                    }
-                )
-            }
-        }
-    }
-}
+/**
 
 @Composable
 fun TranslateDialog(
@@ -671,7 +607,7 @@ fun SaveAndCloseTranslateButtons(onTranslate: () -> Unit, onDiscard: () -> Unit)
 
     }
 }
-
+**/
 @Composable
 fun SaveAndCloseButtons(onMakeSummary: () -> Unit, onDiscard: () -> Unit) {    // Row container for horizontal alignment
     Row(
@@ -685,7 +621,7 @@ fun SaveAndCloseButtons(onMakeSummary: () -> Unit, onDiscard: () -> Unit) {    /
             onClick = onMakeSummary,
             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
             modifier = Modifier.weight(1f)) {
-            Text("Make summary")
+            Text(LocalContext.current.getString(R.string.mm_make))
         }
 
         // Spacer could be used for fixed spacing between buttons if needed
@@ -696,7 +632,7 @@ fun SaveAndCloseButtons(onMakeSummary: () -> Unit, onDiscard: () -> Unit) {    /
             onClick = onDiscard,
             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
             modifier = Modifier.weight(1f)) {
-            Text("Discard")
+            Text(LocalContext.current.getString(R.string.discard))
         }
 
     }

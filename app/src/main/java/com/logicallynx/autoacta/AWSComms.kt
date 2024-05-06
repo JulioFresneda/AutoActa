@@ -23,6 +23,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import com.amplifyframework.auth.AuthUserAttribute
 import com.amplifyframework.auth.AuthUserAttributeKey
+import com.logicallynx.autoacta.LanguageSelected
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,7 +36,8 @@ object S3Comms {
         val audioFilename: String,
         val email: String,
         val tags: List<String>,
-        val date: String
+        val date: String,
+        val language: String
     )
 
 
@@ -187,13 +189,16 @@ object S3Comms {
         val audioFilename = "$jobName.wav"
 
         // Create the JobConfig object
+        val lang = LanguageSelected.language
+
         val jobConfig = JobConfig(
             jobName = jobName,
             description = jobDescription,
             audioFilename = audioFilename,
             email = email,
             tags = tags,
-            date = LocalDateTime.now().toString()
+            date = LocalDateTime.now().toString(),
+            language = lang.toString()
         )
 
         val keyConfig = "${jobConfig.jobName}/config.json"
@@ -256,6 +261,11 @@ object S3Comms {
         fun onError(e: Exception)
     }
 
+    interface FetchPlanCallback {
+        fun onSuccess(plan: String)
+        fun onError(e: Exception)
+    }
+
     fun fetchRemainingMinutesWithCallbacks(callback: FetchMinutesCallback) {
         Amplify.Auth.fetchUserAttributes(
             { attributes ->
@@ -277,28 +287,30 @@ object S3Comms {
         )
     }
 
-
-
-    suspend fun fetchRemainingMinutes(): Int = suspendCancellableCoroutine { continuation ->
+    fun fetchPlanWithCallbacks(callback: FetchPlanCallback) {
         Amplify.Auth.fetchUserAttributes(
             { attributes ->
-                val remainingMinutesAttr = attributes.find { it.key.keyString == "custom:remaining_minutes" }
-                if (remainingMinutesAttr != null) {
+                val plan = attributes.find { it.key.keyString == "custom:plan" }
+                if (plan != null) {
                     try {
-                        val minutes = remainingMinutesAttr.value.toInt()
-                        continuation.resume(minutes)
+                        var planstr = plan.value.toString()
+                        callback.onSuccess(planstr)
                     } catch (e: NumberFormatException) {
-                        continuation.resumeWithException(e)
+                        callback.onError(e)
                     }
                 } else {
-                    continuation.resumeWithException(Exception("Attribute custom:remaining_minutes not found"))
+                    callback.onError(Exception("Attribute custom:plan not found"))
                 }
             },
             { error ->
-                continuation.resumeWithException(error)
+                callback.onError(error)
             }
         )
     }
+
+
+
+
     fun updateRemainingMinutes(value: Int) {
 
 

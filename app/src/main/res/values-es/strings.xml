@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AutoActa</string>
+    <string name="mm_aa_text">¡Sólo pulsa el botón y comienza a hablar!</string>
+    <string name="mm_min_remaining_1">"Tienes "</string>
+    <string name="mm_min_remaining_2">" minutos disponibles de "</string>
+    <string name="home">Grabar</string>
+    <string name="summaries">Resúmenes</string>
+    <string name="account">Cuenta</string>
+    <string name="mm_aa_desc_title">¿Qué hace AutoActa?</string>
+    <string name="search">Buscar</string>
+    <string name="s_date">Fecha</string>
+    <string name="s_email">Email</string>
+    <string name="s_tags">Tags</string>
+    <string name="s_desc">Descripción</string>
+    <string name="s_share">Compartir</string>
+    <string name="close">Cerrar</string>
+    <string name="finish">Finalizar</string>
+    <string name="mm_sum_name">Nombre del resumen</string>
+    <string name="mm_sum_desc">Descripción del resumen</string>
+    <string name="mm_email_export">Email para exportar</string>
+    <string name="mm_make">Crear resumen</string>
+    <string name="discard">Descartar</string>
+    <string name="mm_confirm_discard_title">Confirmar Descartar</string>
+    <string name="mm_confirm_discard_desc">¿Estás seguro de que deseas descartar tu grabación?</string>
+    <string name="cancel">Cancelar</string>
+    <string name="acc_upgrade">Mejora a premium!</string>
+    <string name="acc_upgrade_desc">"Por ahora, el plan premium no está disponible. Si buscas algún plan personalizado, envíanos un email a "</string>
+    <string name="aa_lang">Selecciona el lenguage que será usado en la conversación que quieres grabar. Por defecto, AutoActa escoge el lenguage que tiene tu móvil por defecto.</string>
+    <string name="signout">Desloguear</string>
+    <string name="welcome">Bienvenido a AutoActa!</string>
+    <string name="si_title">Inicia sesión o crea una cuenta</string>
+    <string name="pass">Contraseña</string>
+    <string name="signin">Iniciar sesión</string>
+    <string name="forgot_pass">¿Contraseña olvidada?</string>
+    <string name="create_account">Crea una cuenta</string>
+    <string name="si_w_google">Inicia sesión con Google</string>
+    <string name="toast_onyourway">Tu resumen va en camino. Por favor, espera unos minutos!</string>
+    <string name="toast_pdf_not_ready">Tu PDF todavía no está listo!</string>
+    <string name="toast_docx_not_ready">Tu documento todavía no está listo!</string>
+    <string name="mm_aa_desc">AutoActa es tu secretario personal.\n\nResume tu conversación, te proporciona los puntos clave y las tareas futuras de las que se hablaron, así como la transcripción completa.\n\nEl informe se envía a tu correo electrónico.\n\nTen en cuenta que AutoActa utiliza una IA generativa, lo que significa que si la conversación es demasiado corta, puede generar información errónea.\n\nEn consecuencia, se recomienda que la conversación dure al menos un minuto.</string>
+    <string name="valid_text">Por favor, introduce texto válido</string>
+    <string name="mm_rec_fin">Grabación completada</string>
+</resources>

@@ -1,5 +1,6 @@
-package com.logicallynx.myapp
+package com.logicallynx.autoacta
 
+import S3Comms
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.os.Bundle
@@ -42,8 +43,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -84,7 +83,6 @@ import com.amplifyframework.storage.s3.AWSS3StoragePlugin
 
 import com.amplifyframework.ui.authenticator.ui.Authenticator
 import com.logicallynx.autoacta.AuthenticatorScreen.SetUpLoginWithGoogle
-import com.logicallynx.autoacta.SignInForm
 import kotlinx.coroutines.launch
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedContent
@@ -99,23 +97,17 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.TextButton
-import com.logicallynx.autoacta.Brushes
-import com.logicallynx.autoacta.SaveAudioActivityBack
-import com.logicallynx.autoacta.settingsPage
-import com.logicallynx.autoacta.summariesPage
-import com.logicallynx.myapp.R
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import kotlinx.coroutines.delay
 
 
-// TODO - Formatear codigo
-// Docx
-// TODO - Cuadrar informes
-// Backend
-// TODO - Status
-// Frontend
-// TODO - Embellecer
 
 
 
@@ -138,26 +130,22 @@ data class BottomNavigationItem(
 ) {
 
     //function to get the list of bottomNavigationItems
+    @Composable
     fun bottomNavigationItems() : List<BottomNavigationItem> {
         return listOf(
             BottomNavigationItem(
-                label = "Home",
+                label = LocalContext.current.getString(R.string.home),
                 icon = Icons.Filled.Home,
                 route = Screens.Home.route
             ),
             BottomNavigationItem(
-                label = "Summaries",
+                label = LocalContext.current.getString(R.string.summaries),
                 icon = Icons.Filled.Call,
                 route = Screens.Summaries.route
             ),
             BottomNavigationItem(
-                label = "Premium",
-                icon = Icons.Filled.Star,
-                route = Screens.Premium.route
-            ),
-            BottomNavigationItem(
-                label = "Settings",
-                icon = Icons.Filled.Settings,
+                label = LocalContext.current.getString(R.string.account),
+                icon = Icons.Filled.AccountCircle,
                 route = Screens.Settings.route
             )
         )
@@ -252,10 +240,7 @@ class MainActivity : ComponentActivity() {
 
 
 
-        val toastText = "AutoActa is your personal secretary.\n\n" +
-        "It summarizes your conversation, gives you the key points and future tasks talked about, and the complete transcription too.\n\n" +
-        "The report is sent to your email.\n\nKeep in mind that AutoActa uses a generative AI, that means, if the conversation is too short, it can hallucinate.\n"+
-        "In consequence, it is recommended that the conversation last at least one minute."
+        val toastText = getString(R.string.mm_aa_desc)
 
 
 
@@ -302,7 +287,7 @@ class MainActivity : ComponentActivity() {
                         style = typewriterFontStyle
                     )
                     Text(
-                        text = "Just press the button and start to talk!",
+                        text = getString(R.string.mm_aa_text),
                         color = Color.Black,
                         style = MaterialTheme.typography.bodyMedium
                     )
@@ -319,6 +304,10 @@ class MainActivity : ComponentActivity() {
         }
 
 
+        remaining_minutes_counter()
+
+
+
         if (this.showMakeSummaryDialog) {
             // Show the full-screen composable when requested
             SaveAudioActivityBack(
@@ -331,13 +320,13 @@ class MainActivity : ComponentActivity() {
         if (showDescription.value) {
             AlertDialog(
                 onDismissRequest = { showDescription.value = false },
-                title = { androidx.compose.material3.Text("What AutoActa does?") },
+                title = { androidx.compose.material3.Text(getString(R.string.mm_aa_desc_title)) },
                 text = {
                     Text(text = toastText, color = Color.Black)
                 },
                 confirmButton = {
                     TextButton(onClick = { showDescription.value = false }) {
-                        androidx.compose.material3.Text("Close", color = Color.Black)
+                        androidx.compose.material3.Text(getString(R.string.close), color = Color.Black)
                     }
                 }
             )
@@ -538,7 +527,7 @@ class MainActivity : ComponentActivity() {
                     elapsedSeconds = 0
                 }, enabled = isRecording || (!isRecording && started)
                 ) {
-                    androidx.compose.material3.Text("Finish")
+                    Text(getString(R.string.finish))
                 }
 
 
@@ -726,7 +715,7 @@ class MainActivity : ComponentActivity() {
 
                     }
                     composable(Screens.Settings.route) {
-                        settingsPage(isAuthenticated)
+                        accountPage(isAuthenticated)
                     }
                 }
             }
@@ -780,5 +769,102 @@ private suspend fun startRecordingAnimation(scale: Animatable<Float, *>){
 // Animation for stopping the recording
 private suspend fun stopRecordingAnimation(scale: Animatable<Float, *>){
     scale.snapTo(1f)  // Immediately return to normal scale
+}
+
+
+@Composable
+fun remaining_minutes_counter(){
+    
+    var remainingMinutes by remember {
+        mutableStateOf(0)
+    }
+    var myplan by remember {
+        mutableStateOf("FREE")
+    }
+    S3Comms.fetchRemainingMinutesWithCallbacks(object :
+        S3Comms.FetchMinutesCallback {
+        override fun onSuccess(minutes: Int) {
+            remainingMinutes = minutes
+        }
+
+        override fun onError(e: Exception) {
+            // Handle error, possibly update UI to show error message
+            Log.e("FetchError", "Error fetching minutes: ${e.message}")
+        }
+    })
+
+    
+    S3Comms.fetchPlanWithCallbacks(object :
+        S3Comms.FetchPlanCallback {
+        override fun onSuccess(plan: String) {
+            myplan = plan
+        }
+
+        override fun onError(e: Exception) {
+            // Handle error, possibly update UI to show error message
+            Log.e("FetchError", "Error fetching minutes: ${e.message}")
+        }
+    })
+
+
+    var totalMinutes = 200
+    if(myplan == "PREMIUM") {
+        totalMinutes = 1000
+    }
+
+
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(vertical = 50.dp),
+        contentAlignment = Alignment.BottomCenter
+    ){
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            val progress = remainingMinutes.toFloat()/totalMinutes.toFloat()
+            LinearProgressIndicator(
+                progress = progress,
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
+                    .height(10.dp),
+                strokeCap = StrokeCap.Round
+                )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            val annotatedString = buildAnnotatedString {
+                append(LocalContext.current.getString(R.string.mm_min_remaining_1))
+
+                var remcolor = MaterialTheme.colorScheme.onSecondary
+                if(remainingMinutes < 60){
+                    remcolor = MaterialTheme.colorScheme.tertiary
+                }
+                withStyle(style = SpanStyle(color = remcolor)) {
+                    append(remainingMinutes.toString())
+                }
+
+                append(LocalContext.current.getString(R.string.mm_min_remaining_2))
+
+                withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSecondary)) {
+                    append(totalMinutes.toString())
+                }
+
+                append(".")
+            }
+
+            Text(
+                text = annotatedString,
+                color = MaterialTheme.colorScheme.secondary,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier
+                    .align(alignment = Alignment.CenterHorizontally)
+                    .background(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(10.dp)
+                    )
+                    .padding(vertical = 2.dp, horizontal = 10.dp),
+
+            )
+        }
+    }
 }
 

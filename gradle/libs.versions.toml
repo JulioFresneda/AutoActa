@@ -30,6 +30,7 @@ awsDatastore = "2.15.2"
 tika = "3.0.0-BETA"
 tikaEvalCore = "3.0.0-BETA"
 tikaApp = "3.0.0-BETA"
+billing = "6.2.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -68,6 +69,7 @@ aws-datastore = { group = "com.amplifyframework", name = "aws-datastore", versio
 tika = { group = "org.apache.tika", name = "tika", version = "2.9.2" }
 tika-eval-core = { group = "org.apache.tika", name = "tika-eval-core", version.ref = "tikaEvalCore" }
 tika-app = { group = "org.apache.tika", name = "tika-app", version.ref = "tikaApp" }
+billing = { group = "com.android.billingclient", name = "billing", version.ref = "billing" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

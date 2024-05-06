@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -55,7 +56,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.content.FileProvider
-import com.logicallynx.myapp.R
+import com.logicallynx.autoacta.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
@@ -71,6 +72,12 @@ fun SearchableSummaryList(
     var searchText by remember { mutableStateOf("") }
     var showDialog by remember { mutableStateOf(false) }
     var selectedSummary by remember { mutableStateOf<S3Comms.JobConfig?>(null) }
+
+    BackHandler {
+        // Activate the button when the "Go Back" gesture is triggered
+        showDialog = false
+        selectedSummary = null
+    }
 
 
 
@@ -96,7 +103,7 @@ fun SearchableSummaryList(
         OutlinedTextField(
             value = searchText,
             onValueChange = { searchText = it },
-            label = { Text("Search") },
+            label = { Text(LocalContext.current.getString(R.string.search)) },
             singleLine = true,
             
             modifier = Modifier
@@ -300,12 +307,12 @@ fun SummaryDetails(showDialog: (Boolean) -> Unit, selectedSummary: S3Comms.JobCo
             }
 
 
-            SummaryCategory("Description", selectedSummary.description)
-            SummaryCategory("Date", formatDateString(selectedSummary.date))
-            SummaryCategory("Email", selectedSummary.email)
-            SummaryCategory("Tags", selectedSummary.tags.joinToString(separator = ", "))
+            SummaryCategory(LocalContext.current.getString(R.string.s_desc), selectedSummary.description)
+            SummaryCategory(LocalContext.current.getString(R.string.s_date), formatDateString(selectedSummary.date))
+            SummaryCategory(LocalContext.current.getString(R.string.s_email), selectedSummary.email)
+            SummaryCategory(LocalContext.current.getString(R.string.s_tags), selectedSummary.tags.joinToString(separator = ", "))
 
-            SummaryCategory("Share", "")
+            SummaryCategory(LocalContext.current.getString(R.string.s_share), "")
 
             var found_pdf by remember {mutableStateOf(true) }
             var found_docx by remember {mutableStateOf(true) }
@@ -385,10 +392,10 @@ fun SummaryDetails(showDialog: (Boolean) -> Unit, selectedSummary: S3Comms.JobCo
 
             Spacer(modifier = Modifier.height(16.dp))
             if(!found_pdf){
-                Toast.makeText(context, "Your PDF is not ready yet!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, LocalContext.current.getString(R.string.toast_pdf_not_ready), Toast.LENGTH_SHORT).show()
             }
             if(!found_docx){
-                Toast.makeText(context, "Your document is not ready yet!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, LocalContext.current.getString(R.string.toast_docx_not_ready), Toast.LENGTH_SHORT).show()
             }
 
 
@@ -418,7 +425,7 @@ fun SummaryDetails(showDialog: (Boolean) -> Unit, selectedSummary: S3Comms.JobCo
                     colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
                 ) {
 
-                    Text("Close")
+                    Text(LocalContext.current.getString(R.string.close))
                 }
             }
 
@@ -503,14 +510,14 @@ fun SummaryElevatedCard(item: S3Comms.JobConfig, onClickSummary: (S3Comms.JobCon
             Spacer(modifier = Modifier.height(12.dp))
 
             Column(modifier = Modifier.padding(horizontal = 6.dp)){
-                CardField("Date", formatDateString(item.date))
+                CardField(LocalContext.current.getString(R.string.s_date), formatDateString(item.date))
 
                 Spacer(modifier = Modifier.height(5.dp))
-                CardField("Email", item.email)
+                CardField(LocalContext.current.getString(R.string.s_email), item.email)
                 Spacer(modifier = Modifier.height(5.dp))
 
 
-                CardField("Tags", item.tags.joinToString(separator = ", "))
+                CardField(LocalContext.current.getString(R.string.s_tags), item.tags.joinToString(separator = ", "))
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
