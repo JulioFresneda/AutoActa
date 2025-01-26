@@ -10,6 +10,7 @@ The report is sent to your email. Keep in mind that AutoActa uses generative AI,
 AutoActa uses AWS Amplify to manage user authentication and management. 
 
 For AI stuff, it uses containers that are run in AWS Step Functions:
+
 ![screenshot_2](screenshot_2.png)
 
 ## Step 1: Speech recognition
